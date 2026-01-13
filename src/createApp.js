@@ -40,15 +40,7 @@ export async function createApp({ projectName, language, eslint, git }) {
     await fs.mkdir(projectPath, { recursive: true });
 
     //? creating dirs
-    await createFolders(projectPath);
-
-    // Copy index file
-    const indexFile = `index.${isTS ? "ts" : "js"}`;
-    const srcContent = await fs.readFile(
-      path.join(templateDir, indexFile),
-      "utf-8"
-    );
-    await fs.writeFile(path.join(projectPath, "src", indexFile), srcContent);
+    await createFolders(projectPath, isTS);
 
     // Copy app file
     const appFile = `app.${isTS ? "ts" : "js"}`;
@@ -80,7 +72,7 @@ export async function createApp({ projectName, language, eslint, git }) {
     //?adding utils files
     const utilsProjectPath = path.join(projectPath, "src", "utils");
     const ext = isTS ? "ts" : "js";
-    
+
     //? transaction doesn't needed for now
     // await fs.copyFile(
     //   path.join(utilsDir, `transaction.${ext}`),
@@ -100,10 +92,10 @@ export async function createApp({ projectName, language, eslint, git }) {
       name: projectName,
       version: "1.0.0",
       type: "module",
-      main: `src/${indexFile}`,
+      main: `src/server.${isTS ? "ts" : "js"}`,
       scripts: {
-        start: isTS ? `ts-node src/index.ts` : `node src/index.js`,
-        dev: isTS ? `tsx watch src/server.ts` : `nodemon src/index.js`,
+        start: isTS ? `ts-node src/server.ts` : `node src/server.js`,
+        dev: isTS ? `tsx watch src/server.ts` : `nodemon src/server.js`,
         release: "standard-version",
         "release:minor": "standard-version --release-as minor",
         "release:major": "standard-version --release-as major",
@@ -205,7 +197,7 @@ export async function createApp({ projectName, language, eslint, git }) {
   }
 }
 
-async function createFolders(projectPath) {
+async function createFolders(projectPath, isTs) {
   const srcPath = path.join(projectPath, 'src');
   await fs.mkdir(srcPath, { recursive: true });
 
