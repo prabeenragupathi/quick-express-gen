@@ -79,17 +79,20 @@ export async function createApp({ projectName, language, eslint, git }) {
 
     //?adding utils files
     const utilsProjectPath = path.join(projectPath, "src", "utils");
+    const ext = isTS ? "ts" : "js";
+    
+    //? transaction doesn't needed for now
+    // await fs.copyFile(
+    //   path.join(utilsDir, `transaction.${ext}`),
+    //   path.join(utilsProjectPath, `transaction.${ext}`)
+    // );
     await fs.copyFile(
-      path.join(utilsDir, "transaction.js"),
-      path.join(utilsProjectPath, "transaction.js")
+      path.join(utilsDir, `error.${ext}`),
+      path.join(utilsProjectPath, `error.${ext}`)
     );
     await fs.copyFile(
-      path.join(utilsDir, "error.js"),
-      path.join(utilsProjectPath, "error.js")
-    );
-    await fs.copyFile(
-      path.join(utilsDir, "asynHandler.js"),
-      path.join(utilsProjectPath, "asynHandler.js")
+      path.join(utilsDir, `asynHandler.${ext}`),
+      path.join(utilsProjectPath, `asynHandler.${ext}`)
     );
 
     // Create package.json
@@ -100,7 +103,7 @@ export async function createApp({ projectName, language, eslint, git }) {
       main: `src/${indexFile}`,
       scripts: {
         start: isTS ? `ts-node src/index.ts` : `node src/index.js`,
-        dev: isTS ? `nodemon --exec ts-node src/index.ts` : `nodemon src/index.js`,
+        dev: isTS ? `tsx watch src/server.ts` : `nodemon src/index.js`,
         release: "standard-version",
         "release:minor": "standard-version --release-as minor",
         "release:major": "standard-version --release-as major",
@@ -138,6 +141,7 @@ export async function createApp({ projectName, language, eslint, git }) {
           "@types/express",
           "nodemon",
           "standard-version",
+          "tsx"
         ]
       : ["nodemon", "standard-version"];
 
@@ -214,6 +218,10 @@ async function createFolders(projectPath) {
     "services",
     "utils",
   ];
+
+  if(isTs){
+    folders.push("types");
+  }
 
   for (const folder of folders) {
     const dirPath = path.join(srcPath, folder);
