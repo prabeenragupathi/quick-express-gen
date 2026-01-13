@@ -48,7 +48,23 @@ export async function createApp({ projectName, language, eslint, git }) {
       path.join(templateDir, indexFile),
       "utf-8"
     );
-    await fs.writeFile(path.join(projectPath, indexFile), srcContent);
+    await fs.writeFile(path.join(projectPath, "src", indexFile), srcContent);
+
+    // Copy app file
+    const appFile = `app.${isTS ? "ts" : "js"}`;
+    const appContent = await fs.readFile(
+      path.join(templateDir, appFile),
+      "utf-8"
+    );
+    await fs.writeFile(path.join(projectPath, "src", appFile), appContent);
+
+    // Copy server file
+    const serverFile = `server.${isTS ? "ts" : "js"}`;
+    const serverContent = await fs.readFile(
+      path.join(templateDir, serverFile),
+      "utf-8"
+    );
+    await fs.writeFile(path.join(projectPath, "src", serverFile), serverContent);
 
     // Create .env
     await fs.writeFile(
@@ -57,12 +73,12 @@ export async function createApp({ projectName, language, eslint, git }) {
     );
 
     //? config env
-    const envFilePath = path.join(projectPath, "config", "env.js");
+    const envFilePath = path.join(projectPath, "src", "config", isTS ? "env.ts" : "env.js");
     const srcEnvPath = path.resolve(__dirname, `../templates/env.js`);
     await fs.copyFile(srcEnvPath, envFilePath);
 
     //?adding utils files
-    const utilsProjectPath = path.join(projectPath, "utils");
+    const utilsProjectPath = path.join(projectPath, "src", "utils");
     await fs.copyFile(
       path.join(utilsDir, "transaction.js"),
       path.join(utilsProjectPath, "transaction.js")
@@ -81,23 +97,23 @@ export async function createApp({ projectName, language, eslint, git }) {
       name: projectName,
       version: "1.0.0",
       type: "module",
-      main: indexFile,
+      main: `src/${indexFile}`,
       scripts: {
-        start: isTS ? "ts-node index.ts" : "node index.js",
-        dev: isTS ? "nodemon --exec ts-node index.ts" : "nodemon index.js",
+        start: isTS ? `ts-node src/index.ts` : `node src/index.js`,
+        dev: isTS ? `nodemon --exec ts-node src/index.ts` : `nodemon src/index.js`,
         release: "standard-version",
         "release:minor": "standard-version --release-as minor",
         "release:major": "standard-version --release-as major",
       },
       imports: {
-        "#root/*": "./*",
-        "#controllers/*": "./controllers/*",
-        "#models/*": "./models/*",
-        "#utils/*": "./utils/*",
-        "#routes/*": "./routes/*",
-        "#config/*": "./config/*",
-        "#services/*": "./services/*",
-        "#middlewares/*": "./middlewares/*",
+        "#root/*": "./src/*",
+        "#controllers/*": "./src/controllers/*",
+        "#models/*": "./src/models/*",
+        "#utils/*": "./src/utils/*",
+        "#routes/*": "./src/routes/*",
+        "#config/*": "./src/config/*",
+        "#services/*": "./src/services/*",
+        "#middlewares/*": "./src/middlewares/*",
       },
       dependencies: {},
       devDependencies: {},
@@ -186,6 +202,9 @@ export async function createApp({ projectName, language, eslint, git }) {
 }
 
 async function createFolders(projectPath) {
+  const srcPath = path.join(projectPath, 'src');
+  await fs.mkdir(srcPath, { recursive: true });
+
   const folders = [
     "routes",
     "controllers",
@@ -197,7 +216,7 @@ async function createFolders(projectPath) {
   ];
 
   for (const folder of folders) {
-    const dirPath = path.join(projectPath, folder);
+    const dirPath = path.join(srcPath, folder);
     await fs.mkdir(dirPath, { recursive: true });
   }
 }
