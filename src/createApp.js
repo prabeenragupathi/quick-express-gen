@@ -158,7 +158,6 @@ export async function createApp({ projectName, language, eslint, git }) {
               esModuleInterop: true,
               forceConsistentCasingInFileNames: true,
               skipLibCheck: true,
-              baseUrl: ".", // REQUIRED when using paths
               paths: {
                 "#root/*": ["./src/*"],
                 "#controllers/*": ["./src/controllers/*"],
