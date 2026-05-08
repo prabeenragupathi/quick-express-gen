@@ -1,6 +1,6 @@
 {
   "name": "quick-express-gen",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": " Instantly create a modern Express.js server — with TypeScript or JavaScript, CORS, Dotenv, ESLint, and Git — all from a single CLI.",
   "main": "bin/index.js",
   "type": "module",
@@ -29,6 +29,7 @@
     "chalk": "^5.4.1",
     "execa": "^9.5.2",
     "fs-extra": "^11.3.0",
+    "gradient-string": "^3.0.0",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
