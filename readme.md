@@ -1,6 +1,6 @@
-# Quick Express Gen
+# Create Xpress
 
-`quick-express-gen` is a simple command-line interface (CLI) tool designed to quickly generate a modern Express.js server setup. This setup includes TypeScript or JavaScript, CORS support, Dotenv configuration, ESLint, and Git initialization — all from a single command.
+`create-xpress` is a simple command-line interface (CLI) tool designed to quickly generate a modern Express.js server setup. This setup includes TypeScript or JavaScript, CORS support, Dotenv configuration, ESLint, and Git initialization — all from a single command.
 
 ## Features
 
@@ -14,11 +14,11 @@
 
 ## Installation
 
-You can install `quick-express-gen` globally or use it via `npx` for one-time usage.
+You can install `create-xpress` globally or use it via `npx` for one-time usage.
 
 ### Using `npx` (No Installation Required)
 
 To create a new Express server, run the following command:
 
 ```bash
-npx quick-express-gen <project-name>
+npx create-xpress <project-name>

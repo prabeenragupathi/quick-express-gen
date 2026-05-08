@@ -1,11 +1,11 @@
 {
-  "name": "quick-express-gen",
+  "name": "create-xpress",
   "version": "7.1.1",
   "description": " Instantly create a modern Express.js server — with TypeScript or JavaScript, CORS, Dotenv, ESLint, and Git — all from a single CLI.",
   "main": "bin/index.js",
   "type": "module",
   "bin": {
-    "quick-express-gen": "./bin/index.js"
+    "create-xpress": "./bin/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,7 +20,7 @@
     "app",
     "with",
     "git",
-    "quick-express-gen"
+    "create-xpress"
   ],
   "author": "prabeen_ragupathi",
   "license": "MIT",

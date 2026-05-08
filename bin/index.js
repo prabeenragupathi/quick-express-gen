@@ -68,16 +68,15 @@ const projectName = rawArgs.find(
   (arg) => !arg.startsWith("-") && !arg.startsWith("--")
 );
 
-// ✅ Simple CLI flag handling
 if (flags.version) {
-  console.log(`${chalk.green("quick-express-gen")} ${chalk.redBright("v"+pkg.version)}`);
+  console.log(`${chalk.green("create-xpress")} ${chalk.redBright("v"+pkg.version)}`);
   process.exit(0);
 }
 
 if (flags.help) {
   console.log(`
     ${chalk.bold.green('Usage:')}
-      ${chalk.cyan('npx quick-express-gen')} ${chalk.yellow('[project-name]')} ${chalk.magenta('[options]')}
+      ${chalk.cyan('npx create-xpress')} ${chalk.yellow('[project-name]')} ${chalk.magenta('[options]')}
     
     ${chalk.bold.green('Options:')}
       ${chalk.yellow('--typescript')}       ${chalk.white('Use TypeScript')}
@@ -109,7 +108,7 @@ async function main() {
     response = {};
   }
   else {
-    p.intro(chalk.bgCyan.black(" 🚀 Quick Express Gen "));
+    p.intro(chalk.bgCyan.black(" 🚀 Create Xpress "));
     
     response = await p.group(
       {
