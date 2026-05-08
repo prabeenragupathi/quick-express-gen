@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-import prompts from "prompts";
+import * as p from "@clack/prompts";
 import chalk from "chalk";
-import ora from "ora";
 import { createApp } from "../src/createApp.js";
 import path, { dirname } from "path";
 import fs from "fs/promises";
@@ -17,11 +16,11 @@ const pkg = JSON.parse(pkgRaw);
 
 // --- store cleanup info
 let projectPath = null;
-let spinner = null;
+export let clackSpinner = null;
 let childProcess = null; // Optional: in case you use exec for npm install
 
 async function cleanOnInterrupt() {
-  if (spinner) spinner.fail(chalk.red("Project creation cancelled by user."));
+  if (clackSpinner) clackSpinner.stop("Project creation cancelled by user.");
 
   if (childProcess) {
     try {
@@ -51,14 +50,6 @@ async function cleanOnInterrupt() {
 //! 🛑 Ctrl+C / force quit
 process.on("SIGINT", cleanOnInterrupt);
 process.on("SIGTERM", cleanOnInterrupt); // Linux friendly
-
-//! ❌ Escape key or manual cancel from prompt
-prompts.override({
-  onCancel: async () => {
-    await cleanOnInterrupt();
-    return false; // Exit prompt
-  },
-});
 
 //? getting arguments values
 const rawArgs = process.argv.slice(2);
@@ -118,45 +109,45 @@ async function main() {
     response = {};
   }
   else {
-    response = await prompts([
+    p.intro(chalk.bgCyan.black(" 🚀 Quick Express Gen "));
+    
+    response = await p.group(
       {
-        type: projectName ? null : "text",
-        name: "projectName",
-        message: "Project name:",
-        initial: "server",
+        projectName: () => {
+          if (projectName) return Promise.resolve(projectName);
+          return p.text({
+            message: "Project name:",
+            initialValue: "server",
+          });
+        },
+        language: () =>
+          p.select({
+            message: "Choose language:",
+            options: [
+              { value: "ts", label: "TypeScript 🔵", hint: "recommended" },
+              { value: "js", label: "JavaScript 🟨" },
+            ],
+            initialValue: flags.typescript ? "ts" : "js",
+          }),
+        eslint: () =>
+          p.confirm({
+            message: "Include ESLint? 🧹",
+            initialValue: !flags.noEslint,
+          }),
+        git: () =>
+          p.confirm({
+            message: "Initialize Git? 🛠️",
+            initialValue: !flags.noGit,
+          }),
       },
       {
-        type: "select",
-        name: "language",
-        message: "Choose language:",
-        choices: [
-          { title: chalk.yellow("JavaScript 🟨"), value: "js" },
-          { title: chalk.blue("TypeScript 🔵"), value: "ts" },
-        ],
-        initial: flags.typescript ? 1 : 0,
-      },
-      {
-        type: "toggle",
-        name: "eslint",
-        message: `${chalk.magenta("Include ESLint?")} 🧹`,
-        initial: !flags.noEslint,
-        active: chalk.green("Yes ✅"),
-        inactive: chalk.red("No ❌"),
-      },
-      {
-        type: "toggle",
-        name: "git",
-        message: `${chalk.cyan("Initialize Git?")} 🛠️`,
-        initial: !flags.noGit,
-        active: chalk.green("Yes ✅"),
-        inactive: chalk.red("No ❌"),
-      },
-    ],{
-      onCancel: async () => {
-        await cleanOnInterrupt();
-        return false; // Exit prompt
-      },
-    });
+        onCancel: async () => {
+          p.cancel("Operation cancelled.");
+          await cleanOnInterrupt();
+          process.exit(0);
+        },
+      }
+    );
   }
 
   const finalAnswers = {
@@ -166,14 +157,19 @@ async function main() {
     git: typeof response.git === "boolean" ? response.git : defaults.git,
   };
 
-  const spinner = ora("Scaffolding your Express app...").start();
+  clackSpinner = p.spinner();
+  clackSpinner.start("Scaffolding your Express app...");
 
   try {
     projectPath = path.resolve(process.cwd(), finalAnswers.projectName);
-    await createApp(finalAnswers);
-    spinner.succeed(chalk.green("Project created successfully! 🎉"));
+    await createApp(finalAnswers, clackSpinner);
+    clackSpinner.stop(chalk.green("Project created successfully! 🎉"));
+    
+    let nextSteps = `cd ${finalAnswers.projectName}\nnpm run dev`;
+    p.note(nextSteps, "Next steps:");
+    p.outro(chalk.cyan("Happy coding!"));
   } catch (e) {
-    spinner.fail(chalk.red("Failed to create project."));
+    clackSpinner.stop("Failed to create project.");
     console.error(e);
     await cleanOnInterrupt(); // do cleanup here too
   }

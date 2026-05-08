@@ -2,14 +2,12 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { execSync } from "child_process";
-import ora from "ora";
 import chalk from "chalk";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function createApp({ projectName, language, eslint, git }) {
-  const spinner = ora("Creating your project...").start();
+export async function createApp({ projectName, language, eslint, git }, spinner) {
 
   const isTS = language === "ts";
   const projectPath = path.resolve(process.cwd(), projectName);
@@ -115,7 +113,7 @@ export async function createApp({ projectName, language, eslint, git }) {
     process.chdir(projectPath);
 
     // Install dependencies
-    spinner.text = "Installing dependencies...";
+    if (spinner) spinner.message("Installing dependencies...");
     const deps = ["express", "cors", "dotenv"];
     const devDeps = [
       "typescript",
@@ -131,10 +129,10 @@ export async function createApp({ projectName, language, eslint, git }) {
     }
 
     execSync(`npm install ${deps.join(" ")}`, { stdio: "inherit" });
-    spinner.text = "Installing Dev dependencies...";
+    if (spinner) spinner.message("Installing Dev dependencies...");
     execSync(`npm install -D ${devDeps.join(" ")}`, { stdio: "inherit" });
 
-    spinner.text = "Generating configuration files...";
+    if (spinner) spinner.message("Generating configuration files...");
     
     const compilerOptions = {
       target: "es2016",
@@ -183,26 +181,21 @@ export async function createApp({ projectName, language, eslint, git }) {
     }
 
     if (eslint) {
-      spinner.text = "Installing ESLint...";
+      if (spinner) spinner.message("Installing ESLint...");
       execSync(`npm install -D eslint`, { stdio: "inherit" });
       execSync(`npx eslint --init`, { stdio: "inherit" });
     }
 
     if (git) {
-      spinner.text = "Initializing Git...";
+      if (spinner) spinner.message("Initializing Git...");
       execSync(`git init`, { stdio: "inherit" });
     }
 
     //? create .gitignore file
     await fs.copyFile(gitignoreSrc, path.join(projectPath, ".gitignore"));
 
-    spinner.succeed();
-
-    console.log(chalk.cyan(`\nNext steps:`));
-    console.log(chalk.cyan(`  cd ${projectName}`));
-    console.log(chalk.cyan(`  npm start or npm run dev`));
+    // console.log statements are moved to bin/index.js
   } catch (err) {
-    spinner.fail("Failed to create project.");
     try {
       await fs.rm(projectPath, { recursive: true, force: true });
       console.log("🧹 Cleaned up created files.");
