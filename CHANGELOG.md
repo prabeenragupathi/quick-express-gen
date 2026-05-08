@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.1.0](https://github.com/prabeenragupathi/quick-express-gen/compare/v7.0.0...v7.1.0) (2026-05-08)
+
 ## [7.0.0](https://github.com/prabeenragupathi/quick-express-gen/compare/v6.2.3...v7.0.0) (2026-05-08)
 
 ### [6.2.3](https://github.com/prabeenragupathi/quick-express-gen/compare/v6.2.1...v6.2.3) (2026-01-20)
