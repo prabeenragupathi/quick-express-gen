@@ -1,8 +1,9 @@
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { execSync } from "child_process";
+import { execa } from "execa";
 import chalk from "chalk";
+import gradient from "gradient-string";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -113,7 +114,8 @@ export async function createApp({ projectName, language, eslint, git }, spinner)
     process.chdir(projectPath);
 
     // Install dependencies
-    if (spinner) spinner.message("Installing dependencies...");
+    const loaderColor = gradient('red', 'orange', 'yellow');
+    if (spinner) spinner.message(loaderColor("Installing dependencies..."));
     const deps = ["express", "cors", "dotenv"];
     const devDeps = [
       "typescript",
@@ -128,11 +130,11 @@ export async function createApp({ projectName, language, eslint, git }, spinner)
       devDeps.push("@types/node", "@types/express");
     }
 
-    execSync(`npm install ${deps.join(" ")}`, { stdio: "inherit" });
-    if (spinner) spinner.message("Installing Dev dependencies...");
-    execSync(`npm install -D ${devDeps.join(" ")}`, { stdio: "inherit" });
+    await execa("npm", ["install", ...deps], { stdio: "ignore" });
+    if (spinner) spinner.message(loaderColor("Installing Dev dependencies..."));
+    await execa("npm", ["install", "-D", ...devDeps], { stdio: "ignore" });
 
-    if (spinner) spinner.message("Generating configuration files...");
+    if (spinner) spinner.message(loaderColor("Generating configuration files..."));
     
     const compilerOptions = {
       target: "es2016",
@@ -181,14 +183,14 @@ export async function createApp({ projectName, language, eslint, git }, spinner)
     }
 
     if (eslint) {
-      if (spinner) spinner.message("Installing ESLint...");
-      execSync(`npm install -D eslint`, { stdio: "inherit" });
-      execSync(`npx eslint --init`, { stdio: "inherit" });
+      if (spinner) spinner.message(loaderColor("Installing ESLint..."));
+      await execa("npm", ["install", "-D", "eslint"], { stdio: "ignore" });
+      await execa("npx", ["eslint", "--init"], { stdio: "inherit" });
     }
 
     if (git) {
-      if (spinner) spinner.message("Initializing Git...");
-      execSync(`git init`, { stdio: "inherit" });
+      if (spinner) spinner.message(loaderColor("Initializing Git..."));
+      await execa("git", ["init"], { stdio: "ignore" });
     }
 
     //? create .gitignore file
