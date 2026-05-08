@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "Hello from Quick Express Gen!"});
+  res.json({ message: "Hello from Express!" });
 });
 
 //! error handler middleware
