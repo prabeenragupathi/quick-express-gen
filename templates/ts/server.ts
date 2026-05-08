@@ -1,5 +1,5 @@
-import app from "./app.ts";
-import { PORT } from "#config/env.ts";
+import app from "./app";
+import { PORT } from "@config/env";
 
 const startServer = () => {
   app.listen(PORT, () => {

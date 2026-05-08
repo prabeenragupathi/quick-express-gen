@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { errorHandler } from "#utils/error.js";
+import { errorHandler } from "@utils/error";
 
 const app = express();
 

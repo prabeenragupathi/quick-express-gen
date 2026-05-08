@@ -1,6 +1,6 @@
 import express, { Request, Response, Application } from "express";
 import cors from "cors";
-import { errorHandler } from "#utils/error.ts";
+import { errorHandler } from "@utils/error";
 
 const app:Application = express();
 

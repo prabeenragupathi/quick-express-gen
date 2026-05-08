@@ -1,5 +1,5 @@
-import app from "./app.js";
-import { PORT } from "#config/env.js";
+import app from "./app";
+import { PORT } from "@config/env";
 
 const startServer = () => {
   app.listen(PORT, () => {
